@@ -1,6 +1,11 @@
 package com.mps.elk.sample.model;
 
-public class Pet {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.io.Serializable;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Pet implements Serializable {
 
     private String name;
     private Integer age;

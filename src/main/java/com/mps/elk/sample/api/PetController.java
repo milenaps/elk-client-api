@@ -21,13 +21,8 @@ public class PetController {
     }
 
     @PostMapping
-    public Pet createPet(@RequestBody Pet pet) {
-        return service.create(pet);
-    }
-
-    @PutMapping
-    public Pet updatePet(@RequestBody Pet pet) {
-        return service.update(pet);
+    public Pet savePet(@RequestBody Pet pet) throws IOException {
+        return service.save(pet);
     }
 
     @DeleteMapping

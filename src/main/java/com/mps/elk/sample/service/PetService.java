@@ -2,10 +2,12 @@ package com.mps.elk.sample.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mps.elk.sample.model.Pet;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.stereotype.Service;
 
@@ -18,36 +20,33 @@ import java.util.stream.Collectors;
 public class PetService {
 
     private RestHighLevelClient client;
-    private ObjectMapper objectMapper;
+    private ObjectMapper mapper;
 
     public PetService(RestHighLevelClient client) {
         this.client = client;
-        objectMapper = new ObjectMapper();
+
+        mapper = new ObjectMapper();
     }
 
     public List<Pet> list(String name, Integer age, String species) throws IOException {
-//        String jsonObject = String.format("{\"age\":%s,\"name\":%s,"
-//                +"\"species\":\"%s\"}", age, name, species);
-
-        SearchRequest searchRequest = new SearchRequest("pet");
+        SearchRequest searchRequest = new SearchRequest("pets");
 
         SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
         SearchHit[] searchHits = response.getHits().getHits();
 
-        return
-                Arrays.stream(searchHits)
-                        .map(hit -> objectMapper.convertValue(hit.getSourceAsString(), Pet.class))
-                        .collect(Collectors.toList());
+        return Arrays.stream(searchHits)
+                .map(hit -> mapper.convertValue(hit.getSourceAsString(), Pet.class))
+                .collect(Collectors.toList());
     }
 
-    public Pet create(Pet pet) {
-        //TODO Insert pet into ES index
-        return null;
-    }
+    public Pet save(Pet pet) throws IOException {
+        String jsonObject = String.format("{\"age\":%s,\"name\":\"%s\","
+                + "\"species\":\"%s\"}", pet.getAge(), pet.getName(), pet.getSpecies());
+        IndexRequest request = new IndexRequest("pets");
+        request.source(jsonObject, XContentType.JSON);
 
-    public Pet update(Pet pet) {
-        //TODO Update pet into ES index
-        return null;
+        client.index(request, RequestOptions.DEFAULT);
+        return pet;
     }
 
     public boolean delete(Pet pet) {
