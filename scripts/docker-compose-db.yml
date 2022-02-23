@@ -1,0 +1,15 @@
+version: '2.2'
+
+services:
+  postgres:
+    image: postgres:10-alpine
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=pets
+
+#  docker rm mongodb & docker run -p 27017:27017 -v /tmp/mongodata:/data/db --name mongodb mongo

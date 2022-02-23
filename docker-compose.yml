@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
     container_name: elasticsearch-1
     environment:
       - node.name=elasticsearch-1
@@ -16,14 +16,14 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data01:/usr/share/elasticsearch/data
+      - $PWD/elasticsearch/data1:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
     networks:
       - elastic
 
   es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
     container_name: elasticsearch-2
     environment:
       - node.name=elasticsearch-2
@@ -37,12 +37,12 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data02:/usr/share/elasticsearch/data
+      - $PWD/elasticsearch/data2:/usr/share/elasticsearch/data
     networks:
       - elastic
 
   kib01:
-    image: docker.elastic.co/kibana/kibana:7.13.0
+    image: docker.elastic.co/kibana/kibana:7.12.1
     container_name: kibana-1
     ports:
       - 5601:5601
@@ -51,6 +51,15 @@ services:
       ELASTICSEARCH_HOSTS: '["http://elasticsearch-1:9200","http://elasticsearch-2:9200"]'
     networks:
       - elastic
+
+#  logstash:
+#    image: docker.elastic.co/logstash/logstash:7.12.1
+#    container_name: logstash
+#    environment:
+#      ELASTICSEARCH_URL: http://elasticsearch-1:9200
+#      ELASTICSEARCH_HOSTS: '["http://elasticsearch-1:9200","http://elasticsearch-2:9200"]'
+#    networks:
+#      - elastic
 
 volumes:
   data01:
